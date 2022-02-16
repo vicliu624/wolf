@@ -10,12 +10,20 @@ const tokenVersion = 2
 function tokenEncrypt(userInfo, appid) {
   const tokenKey = config.tokenKey
   const expiresIn = appid ? config.rbacTokenExpireTime : config.consoleTokenExpireTime
-  const payload = { id: parseInt(userInfo.id), username: userInfo.username, manager: userInfo.manager, version: tokenVersion }
+  const jti = guid()
+  const payload = { id: parseInt(userInfo.id), username: userInfo.username, manager: userInfo.manager, version: tokenVersion, jti: jti }
   if (appid) {
     payload.appid = appid
   }
   const token = jwt.sign(payload, tokenKey, { expiresIn })
   return { token, expiresIn }
+}
+
+function guid() {
+  function S4() {
+    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+  }
+  return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
 function tokenDecrypt(token) {
